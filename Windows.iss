@@ -28,13 +28,13 @@ type
 
 // External API declarations
 
-//   - https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-globalmemorystatusex
+//  - https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-globalmemorystatusex
 function GlobalMemoryStatusEx(var lpBuffer: TMemoryStatusEx): BOOL; external 'GlobalMemoryStatusEx@kernel32.dll stdcall';
 
-//   - https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocess
+//  - https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocess
 function GetCurrentProcess(): DWORD; external 'GetCurrentProcess@kernel32.dll stdcall';
 
-//   - https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getprocessaffinitymask
+//  - https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getprocessaffinitymask
 function GetProcessAffinityMask(ACurrentProcess: DWORD; var AProcessAffinityMask, ASystemAffinityMask: DWORD): Boolean; external 'GetProcessAffinityMask@kernel32.dll stdcall';
 
 
