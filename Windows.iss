@@ -37,7 +37,6 @@ function GetCurrentProcess(): DWORD; external 'GetCurrentProcess@kernel32.dll st
 //  - https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getprocessaffinitymask
 function GetProcessAffinityMask(ACurrentProcess: DWORD; var AProcessAffinityMask, ASystemAffinityMask: DWORD): Boolean; external 'GetProcessAffinityMask@kernel32.dll stdcall';
 
-
 // Wrapper around the GlobalMemoryStatusEx get available physical memory
 function AvailablePhysicalMemory: Int64;
 var
@@ -70,8 +69,6 @@ begin
   else
     Result := Format('%d', [ABytes]);
 end;
-
-
 
 // returns total number of processors available to system including
 // logical hyperthreaded processors
