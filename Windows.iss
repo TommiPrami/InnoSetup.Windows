@@ -1,4 +1,5 @@
 // Windows.iss
+[Code]
 
 const
   KB = 1024; // kilobyte
@@ -101,4 +102,82 @@ begin
     // processors
     Result := 1;
   end;
+end;
+
+const
+  ERROR_MORE_DATA = 234;
+
+type
+  TComputerNameFormat = (
+    ComputerNameNetBIOS, // MY_PC_NAME
+    ComputerNameDnsHostname, // MY_PC_NAME
+    ComputerNameDnsDomain, // ourcompany.local 
+    ComputerNameDnsFullyQualified, // MY_PC_NAME.ourcompany.local
+    ComputerNamePhysicalNetBIOS, // MY_PC_NAME
+    ComputerNamePhysicalDnsHostname, // MY_PC_NAME
+    ComputerNamePhysicalDnsDomain,
+    ComputerNamePhysicalDnsFullyQualified,
+    ComputerNameMax
+  );
+
+function GetComputerNameEx(NameType: TComputerNameFormat; lpBuffer: string; var nSize: DWORD): BOOL;
+  external 'GetComputerNameExW@kernel32.dll stdcall';
+
+function TryGetComputerName(const AFormat: TComputerNameFormat; var AOutput: string): Boolean;
+var
+  LBufLen: DWORD;
+begin
+  Result := False;
+  AOutput := '';
+
+  LBufLen := 0;
+
+  if not Boolean(GetComputerNameEx(AFormat, '', LBufLen)) and (DLLGetLastError = ERROR_MORE_DATA) then
+  begin
+    SetLength(AOutput, LBufLen);
+    Result := GetComputerNameEx(AFormat, AOutput, LBufLen);
+
+    if Result then
+      AOutput := Copy(AOutput, 1, LBufLen);
+  end;
+end;
+
+function EndsWith(const ASubText, AText: string; const ACaseSensitive: Boolean): Boolean;
+var
+  LEndStr: string;
+  LSubTextLength: Integer;
+  LTextLength: Integer;
+begin
+  Result := False;
+  LSubTextLength := Length(ASubText);
+
+  // Empty substring always matches (standard behavior)
+  if LSubTextLength = 0 then
+  begin
+    Result := True;
+    Exit;
+  end;
+
+  LTextLength := Length(AText);
+
+  // Text must be at least as long as substring
+  if LTextLength < LSubTextLength then 
+    Exit;
+
+  LEndStr := Copy(AText, LTextLength - LSubTextLength + 1, LSubTextLength);
+
+  if ACaseSensitive then
+    Result := SameStr(ASubText, LEndStr)
+  else
+    Result := SameText(ASubText, LEndStr);
+end;
+
+function ComputerDomainContains(const ADomainSuffix: string): Boolean;
+var 
+  LComputerNameAndDomain: string; 
+begin
+  Result := False;
+
+  if TryGetComputerName(ComputerNameDnsFullyQualified, LComputerNameAndDomain) then
+    Result := EndsWith(ADomainSuffix, LComputerNameAndDomain, False);
 end;
