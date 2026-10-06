@@ -1,4 +1,4 @@
-// Windows.iss
+﻿// Windows.iss
 [Code]
 
 const
